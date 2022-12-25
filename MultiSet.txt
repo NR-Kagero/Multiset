@@ -1,0 +1,120 @@
+#include<iostream>
+using namespace std;
+static int *arG,*arO1,*arr,*arO2,length;
+static bool zero=false;
+int getFirstNonZeroIndex()
+{
+    int index=0;
+    for(int i=0; i<length; i++)
+    {
+        if(arr[i]!=0)
+        {
+            index=i;
+            return index;
+        }
+    }
+    return index;
+}
+void deepCopy(int sum,int *Copy)
+{
+    delete arG;
+    arG=new int[sum];
+    for(int i=0; i<sum; i++)
+    {
+        arG[i]=Copy[i];
+    }
+}
+int operationOne(int sum)
+{
+    delete arO1;
+    int l=1,r=length,Size=0;
+    bool skip=false;
+    Size=sum-r;
+    arO1=new int[Size];
+    for(int i=0,j=0; i<length; i++)
+    {
+
+        for(int k=0; k<arr[i]-1; k++,j++)
+        {
+            arO1[j]=i+1;
+        }
+        arr[i]=arr[i]-1;
+        if(arr[i]==0)
+        {
+            zero=true;
+        }
+    }
+    deepCopy(Size,arO1);
+    return Size;
+}
+int OperationTow(int sum)
+{
+    delete arO2;
+    int i,x,Size=0;
+    i=getFirstNonZeroIndex()+1;
+    x=arr[i-1];
+    arr[i-1]=arr[i-1]-x;
+    Size=sum-x;
+    arO2=new int[Size];
+    for(int j=0,a=0; j<sum; j++)
+    {
+        if(!(arG[j]==i&&x>0))
+        {
+            arO2[a++]=arG[j];
+        }
+        else
+        {
+            x--;
+        }
+    }
+    deepCopy(Size,arO2);
+    return Size;
+}
+void Generate(int length,int sum,int *arr)
+{
+    arG=new int[sum];
+    for(int i=0,n=0; i<length; i++)
+    {
+        for(int j=0,k=i+1; j<arr[i]; j++,n++)
+        {
+            arG[n]=k;
+        }
+    }
+}
+int main()
+{
+    int sum=0,operationCount=0;
+    cin>>length;
+    arr=new int[length];
+    for(int i=0 ; i<length; i++)
+    {
+        cin>>arr[i];
+        sum+=arr[i];
+        if(arr[i]==0)
+        {
+            zero=true;
+        }
+    }
+    Generate(length,sum,arr);
+    while(sum!=0)
+    {
+        if(!zero)
+        {
+            sum=operationOne(sum);
+            operationCount++;
+        }
+        else
+        {
+            sum=OperationTow(sum);
+            operationCount++;
+        }
+        if(sum==0)
+        {
+            break;
+        }
+
+    }
+
+    cout<<operationCount;
+    return 0;
+}
